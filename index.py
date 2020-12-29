@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output
 from app import app
 from apps import youngshot
 
+server = app.server
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
