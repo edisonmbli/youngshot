@@ -1,0 +1,290 @@
+.js-plotly-plot .plotly .modebar {
+  padding-top: 5%;
+  margin-right: 3.5%;
+}
+
+body {
+  background-color: #f2f2f2;
+  margin: 5%;
+}
+
+.two.columns {
+  width: 16.25%;
+}
+
+.column,
+.columns {
+  margin-left: 0.5%;
+}
+
+.pretty_container {
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 10px;
+  padding: 15px;
+  position: relative;
+  box-shadow: 2px 2px 2px lightgrey;
+}
+
+.bare_container {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.dcc_control {
+  margin: 0;
+  padding: 5px;
+  width: calc(100%-40px);
+}
+
+.control_label {
+  margin: 0;
+  padding: 10px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+  width: calc(100%-40px);
+}
+
+.rc-slider {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+#individual_graph,
+#aggregate_graph {
+  width: calc(100% - 30px);
+  position: absolute;
+}
+
+#count_graph {
+  position: absolute;
+  height: calc(100% - 30px);
+  width: calc(100% - 30px);
+}
+
+#countGraphContainer {
+  flex: 5;
+  position: relative;
+}
+
+#header {
+  align-items: center;
+}
+
+#learn-more-button {
+  text-align: center;
+  height: 100%;
+  padding: 0 20px;
+  text-transform: none;
+  font-size: 15px;
+  float: right;
+  margin-right: 10px;
+  margin-top: 30px;
+}
+
+/* Add by Edison */
+.text_label {
+  margin: 0;
+  margin-right: 20px;
+  width: calc(100%-40px);
+}
+
+.description {
+  align-self: flex-start;
+  font-size: small;
+  margin-bottom: -10px;
+  padding-bottom: 0px;
+}
+
+.title_container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}
+
+.title_container H3 {
+  margin: 0px;
+  margin-bottom: 30px;
+}
+
+.title_container H6 {
+  margin-top: 0px;
+  padding-top: 0px;
+  font-size: medium;
+}
+
+.statcard_container {
+  border-radius: 5px;
+  background-color: white;
+  margin: 15px;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px lightgrey;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+}
+
+.statcard_item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+
+.statcard_itemheader {
+  font-weight: bolder;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+
+.statcard_itemdetail {
+  text-align: center;
+  margin: 0;
+  padding: 2px;
+}
+
+.stat_ratio {
+  font-size: smaller;
+  align-self: flex-end;
+}
+
+#effective_stat {
+  background-color: rgba(255, 254, 218, 0.5);
+}
+
+.mainblock_container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  align-content: space-around;
+  margin-bottom: 30px;
+}
+
+.app_structure_container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+#highlightstat {
+  background-color: #fffedb;
+}
+
+#minicardlist {
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.mini_description {
+  align-self: flex-start;
+  font-size: small;
+}
+
+.minicardfloor_container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  align-content: center;
+}
+
+.mini_card {
+  width: 18%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: cneter;
+  font-size: smaller;
+  margin: 12px;
+}
+
+.mini_title {
+  font-weight: bold;
+  text-align: left;
+}
+
+.mini_body {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+  border-radius: 5px;
+  background-color: white;
+  position: relative;
+  box-shadow: 2px 2px 2px lightgrey;
+}
+
+.mini_item {
+  margin-right: 0px;
+  padding: 4px 0px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
+  justify-content: end;
+}
+
+.mini_itemdetail {
+  margin: 0px;
+  padding: 0px 0px;
+}
+
+.mini_text {
+  text-align: left;
+  padding-left: 4px;
+  padding-top: 3px;
+  color: gray;
+}
+
+.mini_num {
+  text-align: left;
+  font-weight: 500;
+  font-size: medium;
+  color: black;
+  padding-left: 4px;
+}
+
+.mini_ratio {
+  text-align: left;
+  align-self: flex-end;
+  font-size: x-small;
+}
+
+.positive_stat {
+  color: green;
+}
+
+.negative_stat {
+  color: red;
+}
+
+.floor_container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-content: space-around;
+  border-radius: 5px;
+  background-color: white;
+  position: relative;
+  box-shadow: 2px 2px 2px lightgrey;
+}
+
+.floor_card {
+}
+
+.control_container {
+  margin-top: 40px;
+  padding-right: 100px;
+}
+
+.control_block {
+  margin: 50px 0px;
+}
