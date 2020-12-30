@@ -40,6 +40,11 @@ feedAttrDf = pd.read_excel(feedAttrFile,
 feedAttrDf['视频时长区间'] = pd.cut(feedAttrDf['视频时长'], [0, 8, 12, 16, 20, 100], labels=[
     "(0,8]", "(8,12]", "(12,16]", "(16,20]", "20s以上"])
 
+# prepare for dropdown selection
+modeName_list = feedAttrDf['玩法名称'].unique()
+dimension_list = ['视频时长区间', '素材使用主题', '视频所在品类', '使用素材数量', '使用素材类型',
+                  '是否使用贴纸', '是否使用特效', '预期评级', '是否蹭热点', '是否带话题', '是否绑定挑战赛', '是否文案引导']
+
 # load cousume detail file
 consumeDetailFile = os.path.join(dataDir, cousumeDetailFileName)
 consumeDetailDf = pd.read_csv(consumeDetailFile,
@@ -178,31 +183,18 @@ layout = html.Div([
                             dcc.Dropdown(
                                 id='mode_dropdown',
                                 options=[
-                                    {'label': '冬至快乐', 'value': '冬至快乐'},
-                                    {'label': '茫', 'value': '茫'},
-                                    {'label': '圣诞朋友圈', 'value': '圣诞朋友圈'}
+                                    {'label': modeName, 'value': modeName} for modeName in modeName_list
                                 ],
-                                value='冬至快乐'
+                                value=modeName_list[0]
                             ),
 
                             html.H6('拆解维度'),
                             dcc.Dropdown(
                                 id='dimension_dropdown',
                                 options=[
-                                    {'label': '视频时长区间', 'value': '视频时长区间'},
-                                    {'label': '素材使用主题', 'value': '素材使用主题'},
-                                    {'label': '视频所在品类', 'value': '视频所在品类'},
-                                    {'label': '使用素材数量', 'value': '使用素材数量'},
-                                    {'label': '使用素材类型', 'value': '使用素材类型'},
-                                    {'label': '是否使用贴纸', 'value': '是否使用贴纸'},
-                                    {'label': '是否使用特效', 'value': '是否使用特效'},
-                                    {'label': '预期评级', 'value': '预期评级'},
-                                    {'label': '是否蹭热点', 'value': '是否蹭热点'},
-                                    {'label': '是否带话题', 'value': '是否带话题'},
-                                    {'label': '是否绑定挑战赛', 'value': '是否绑定挑战赛'},
-                                    {'label': '是否文案引导', 'value': '是否文案引导'}
+                                    {'label': dimension, 'value': dimension} for dimension in dimension_list
                                 ],
-                                value='视频时长区间'
+                                value=dimension_list[0]
                             ),
                         ],
                         className='control_block'
@@ -460,7 +452,7 @@ def update_duration_vv_scatter_graph(jsonified_submit_value):
     [Input('duration_vv_scatter', 'clickData')])
 def display_duration_vv_scatter_click_data(clickData):
     if (clickData is None):
-        return ""
+        return html.P('↓点击圆点，可获取视频信息🔗')
 
     dimension = clickData['points'][0]['customdata'][0]
     video_id = clickData['points'][0]['customdata'][1]
