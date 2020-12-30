@@ -277,9 +277,6 @@ body {
   box-shadow: 2px 2px 2px lightgrey;
 }
 
-.floor_card {
-}
-
 .control_container {
   margin-top: 40px;
   padding-right: 100px;
@@ -287,4 +284,14 @@ body {
 
 .control_block {
   margin: 50px 0px;
+}
+
+.link_container {
+  width: 100%;
+  float: right;
+}
+
+.link_item {
+  display: flex;
+  justify-content: space-around;
 }

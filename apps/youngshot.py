@@ -147,12 +147,12 @@ def getSubDf_byduration(mode_name='all', dimension='all'):
 
     else:
         mode_feedAttrConsumeStatDf = feedAttrConsumeStatDf.query(
-            "玩法名称.str.contains(@mode_name)")[{dimension, '视频时长', '大盘播放VV_sum', '年轻人播放VV_sum'}]
+            "玩法名称.str.contains(@mode_name)")[{dimension, '视频id', '视频时长', '大盘播放VV_sum', '年轻人播放VV_sum'}]
         mode_feedAttrConsumeStatDf.rename(
             columns={'大盘播放VV_sum': '大盘播放VV', '年轻人播放VV_sum': '年轻人播放VV'}, inplace=True)
 
         mode_feedAttrConsumeStatDfTidy = pd.melt(
-            mode_feedAttrConsumeStatDf, id_vars=[dimension, '视频时长'])
+            mode_feedAttrConsumeStatDf, id_vars=[dimension, '视频id', '视频时长'])
         # 人群
         mode_feedAttrConsumeStatDfTidy['人群'] = pd.np.where(mode_feedAttrConsumeStatDfTidy.variable.str.contains('大盘'), '大盘',
                                                            pd.np.where(mode_feedAttrConsumeStatDfTidy.variable.str.contains('年轻人'), '年轻人', 'other'))
@@ -213,7 +213,7 @@ layout = html.Div([
                     html.Div(
                         [
                             html.H6('Debug'),
-                            html.P(id='debugText')
+                            html.Div(id='debugDiv', children='')
                         ],
                         className='control_block',
                         style={'display': 'none'}
@@ -254,6 +254,10 @@ layout = html.Div([
                     ),
 
                     # Floor-2
+                    # To show link of the clicked-point in scatter
+                    html.Div(id="feedLinkDiv",
+                             className="link_container three columns"),
+
                     html.Div(
                         [
                             # 视频数量
@@ -434,7 +438,7 @@ def update_duration_vv_scatter_graph(jsonified_submit_value):
 
     duration_vv_Fig = px.scatter(duration_vv_subDf,
                                  title='视频时长-播放vv散点图',
-                                 x='视频时长', y='value', color=dimension, facet_col='人群',
+                                 x='视频时长', y='value', color=dimension, facet_col='人群', hover_data=[dimension, '视频id'],
                                  labels={"value": "播放vv"},
                                  template='simple_white', color_discrete_sequence=px.colors.sequential.Rainbow)
 
@@ -448,6 +452,27 @@ def update_duration_vv_scatter_graph(jsonified_submit_value):
             l=30, r=30, b=20, t=100),
         hovermode="closest")
     return duration_vv_Fig
+
+
+# 散点图点击事件
+@app.callback(
+    Output('feedLinkDiv', 'children'),
+    [Input('duration_vv_scatter', 'clickData')])
+def display_duration_vv_scatter_click_data(clickData):
+    if (clickData is None):
+        return ""
+
+    dimension = clickData['points'][0]['customdata'][0]
+    video_id = clickData['points'][0]['customdata'][1]
+    vv = clickData['points'][0]['y']
+
+    return html.Div(
+        [
+            html.P("{}, {}  ".format(dimension, vv)),
+            html.A(
+                video_id, href="https://h5.weishi.qq.com/weishi/feed/{}".format(video_id), target='_blank')
+        ],
+        className="link_item")
 
 
 # 完播率
