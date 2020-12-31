@@ -248,7 +248,7 @@ layout = html.Div([
                     # Floor-2
                     # To show link of the clicked-point in scatter
                     html.Div(id="feedLinkDiv",
-                             className="link_container three columns"),
+                             className="link_container four columns"),
 
                     html.Div(
                         [
