@@ -37,8 +37,8 @@ feedAttrDf = pd.read_excel(feedAttrFile,
                                '是否使用贴纸': str, '是否使用特效': str, '素材使用主题': str,
                                '是否蹭热点': str, '是否带话题': str, '是否绑定挑战赛': str, '是否文案引导': str
                            })
-feedAttrDf['视频时长区间'] = pd.cut(feedAttrDf['视频时长'], [0, 8, 12, 16, 20, 50, 150], labels=[
-    "(0,8]", "(8,12]", "(12,16]", "(16,20]", "(20,50]", "50s以上"])
+feedAttrDf['视频时长区间'] = pd.cut(feedAttrDf['视频时长'], [0, 8, 12, 16, 20, 100], labels=[
+    "(0,8]", "(8,12]", "(12,16]", "(16,20]", "20s以上"])
 
 # prepare for dropdown selection
 modeName_list = feedAttrDf['玩法名称'].unique()
@@ -123,9 +123,9 @@ def getSubDf(mode_name='all', dimension='all'):
         dimension_mode_feedAttrConsumeStatDfTidy = pd.melt(
             dimension_mode_feedAttrConsumeStatDf, id_vars=dimension)
         # 统计方式
-        dimension_mode_feedAttrConsumeStatDfTidy['statType'] = pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('mean|条均'), '平均',
-                                                                           pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('median'), '中位数',
-                                                                                       pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('sum'), '累加', 'other')))
+        dimension_mode_feedAttrConsumeStatDfTidy['统计方式'] = pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('mean|条均'), '平均',
+                                                                       pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('median'), '中位数',
+                                                                                   pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('sum'), '累加', 'other')))
         # 人群
         dimension_mode_feedAttrConsumeStatDfTidy['人群'] = pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('大盘'), '大盘',
                                                                      pd.np.where(dimension_mode_feedAttrConsumeStatDfTidy.variable.str.contains('年轻人'), '年轻人', 'other'))
@@ -177,8 +177,8 @@ layout = html.Div([
             # selection
             html.Div(
                 [   # dimension selection
-                    html.Div([
-                        html.Div([
+                    html.Div(
+                        [
                             html.H6('玩法'),
                             dcc.Dropdown(
                                 id='mode_dropdown',
@@ -187,10 +187,7 @@ layout = html.Div([
                                 ],
                                 value=modeName_list[0]
                             ),
-                        ],
-                            className='sidebar_item'),
 
-                        html.Div([
                             html.H6('拆解维度'),
                             dcc.Dropdown(
                                 id='dimension_dropdown',
@@ -200,26 +197,22 @@ layout = html.Div([
                                 value=dimension_list[0]
                             ),
                         ],
-                            className='sidebar_item'),
-                    ],
-                        className='sidebar_control_block'
+                        className='control_block'
                     ),
-
                     # Refresh button
                     html.Button(id='submit-button', n_clicks=0, children='刷新'),
-
                     # Debug window
-                    # html.Div(
-                    #     [
-                    #         html.H6('Debug'),
-                    #         html.Div(id='debugDiv', children='')
-                    #     ],
-                    #     className='control_block',
-                    #     style={'display': 'none'}
-                    # ),
+                    html.Div(
+                        [
+                            html.H6('Debug'),
+                            html.Div(id='debugDiv', children='')
+                        ],
+                        className='control_block',
+                        style={'display': 'none'}
+                    ),
 
                 ],
-                className='container control_container sidebar_container two columns',
+                className='container control_container three columns',
             ),
 
             # statistic
@@ -230,91 +223,89 @@ layout = html.Div([
                         [
                             html.H3(id='block_title',
                                     className='twelve columns'),
-                            html.P('年轻人热点数据反馈', className='twelve columns'),
-                            html.P('取热点投放期间数据，其中大盘指代全年龄段，而年轻人指24岁或以下群体',
-                                   className='twelve columns')
+                            html.P('年轻人热点数据反馈', className='twelve columns')
                         ],
                         className="container title_container"
                     ),
 
-                    # Floor Description
-                    html.H4('消费指标概况', className='twelve columns'),
+                    # Description
+                    html.P('取热点投放期间数据，其中大盘指代全年龄段，而年轻人指24岁或以下群体',
+                           className='twelve columns'),
+
                     # Floor-1
                     html.Div(
                         [
-                            # 完播率
-                            dcc.Graph(id="complete_ratio_bar",
-                                      className='floor_card four columns'),
-                            # 播放完成度
-                            dcc.Graph(id="play_percentage_bar",
-                                      className='floor_card four columns'),
-                            # 互动率
-                            dcc.Graph(id="interact_bar",
-                                      className='floor_card four columns'),
-
+                            # 播放vv
+                            dcc.Graph(id="play_vv_bar",
+                                      className='floor_card six columns'),
+                            # 条均播放vv
+                            dcc.Graph(id="play_vv_perfeed_bar",
+                                      className='floor_card six columns'),
                         ],
                         className="container floor_container twelve columns"
                     ),
 
-                    # Floor Description
-                    html.H4('播放vv挖掘', className='twelve columns'),
                     # Floor-2
+                    # To show link of the clicked-point in scatter
+                    html.Div(id="feedLinkDiv",
+                             className="link_container four columns"),
+
                     html.Div(
                         [
                             # 视频数量
                             dcc.Graph(id="feed_count_bar",
                                       className='floor_card four columns'),
-
-                            # 播放vv
-                            dcc.Graph(id="play_vv_bar",
-                                      className='floor_card four columns'),
-                            # 条均播放vv
-                            dcc.Graph(id="play_vv_perfeed_bar",
-                                      className='floor_card four columns'),
-                        ],
-                        className="container floor_container twelve columns"
-                    ),
-                    # Floor-3
-                    # To show link of the clicked-point in scatter
-                    html.Div(id="feedLinkDiv",
-                             className="link_container four columns"),
-                    html.Div(
-                        [
                             # vv区间分布
                             dcc.Graph(id="duration_vv_scatter",
-                                      className='floor_card twelve columns'),
+                                      className='floor_card eight columns'),
                         ],
                         className="container floor_container twelve columns"
                     ),
 
                 ],
-                className="container ten columns"
+                className="container nine columns"
             ),
         ],
         className='container control_container twelve columns',
     ),
 
     # 2nd block - consume details
-    # html.Div(
-    #     [
-    #         # Floor-3 完播率/播放完成度/互动率
-    #         html.Div(
-    #             [
+    html.Div(
+        [
+            # Floor-3 完播率/播放完成度/互动率
+            html.Div(
+                [
+                    # 完播率
+                    dcc.Graph(id="complete_ratio_bar",
+                              className='floor_card four columns'),
+                    # 播放完成度
+                    dcc.Graph(id="play_percentage_bar",
+                              className='floor_card four columns'),
+                    # 互动率
+                    dcc.Graph(id="interact_bar",
+                              className='floor_card four columns'),
+                ],
+                className="container floor_container twelve columns"
+            ),
 
-    #             ],
-    #             className="container floor_container twelve columns"
-    #         ),
-
-    #         # Floor-4 3s快滑率/5s快滑率/单vv时长
-    #         html.Div(
-    #             [
-
-    #             ],
-    #             className="container floor_container twelve columns"
-    #         ),
-    #     ],
-    #     className='container control_container twelve columns',
-    # ),
+            # Floor-4 3s快滑率/5s快滑率/单vv时长
+            html.Div(
+                [
+                    # 3s快滑率
+                    dcc.Graph(id="skip_3s_bar",
+                              className='floor_card four columns'),
+                    # 5s快滑率
+                    dcc.Graph(id="skip_5s_bar",
+                              className='floor_card four columns'),
+                    # 单vv时长
+                    dcc.Graph(id="duration_pervv_bar",
+                              className='floor_card four columns'),
+                ],
+                className="container floor_container twelve columns"
+            ),
+        ],
+        className='container control_container twelve columns',
+    ),
 
     # hidden signal value
     html.Div(id='signal', style={'display': 'none'})
@@ -431,103 +422,6 @@ def update_feedcount_graph(jsonified_submit_value):
     return feedcountFig
 
 
-# 完播率
-@app.callback(Output('complete_ratio_bar', 'figure'), [Input('signal', 'children')])
-def update_complete_ratio_graph(jsonified_submit_value):
-    mode, dimension = json.loads(jsonified_submit_value)
-    subDf = getSubDf(mode, dimension)
-
-    complete_ratioDf = subDf.query(
-        "variable.str.contains('完播率')")
-    complete_ratioFig = px.bar(complete_ratioDf,
-                               title='完播率对比',
-                               x=dimension, y='value', color='人群', facet_row='statType', facet_row_spacing=0.05,
-                               labels={"value": "统计值", "statType": "统计方式"},
-                               barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Bluyl)
-
-    complete_ratioFig.update_traces(texttemplate='%{value:.2f}',
-                                    textposition='outside')
-    complete_ratioFig.update_yaxes(
-        range=[0, 0.4], showgrid=True)  # the y-axis
-    complete_ratioFig.update_layout(
-        height=700,
-        title=dict(
-            x=0.5, xref='paper', font=dict(size=16)),
-        font_family="PingFangSC-Light",
-        margin=dict(
-            l=30, r=30, b=20, t=100),
-        # gap between bars of adjacent location coordinates.
-        bargap=0.3,
-        # gap between bars of the same location coordinate.
-        bargroupgap=0,
-        hovermode="closest")
-    return complete_ratioFig
-
-
-# 播放完成度
-@app.callback(Output('play_percentage_bar', 'figure'), [Input('signal', 'children')])
-def update_play_percentage_graph(jsonified_submit_value):
-    mode, dimension = json.loads(jsonified_submit_value)
-    subDf = getSubDf(mode, dimension)
-
-    play_percentageDf = subDf.query("variable.str.contains('播放完成度')")
-    play_percentageFig = px.bar(play_percentageDf,
-                                title='播放完成度对比',
-                                x=dimension, y='value', color='人群', facet_row='statType', facet_row_spacing=0.05,
-                                labels={"value": "统计值", "statType": "统计方式"},
-                                barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Bluyl)
-
-    play_percentageFig.update_traces(texttemplate='%{value:.2f}',
-                                     textposition='outside')
-    play_percentageFig.update_yaxes(
-        range=[0, 0.7], showgrid=True)  # the y-axis
-    play_percentageFig.update_layout(
-        height=700,
-        title=dict(
-            x=0.5, xref='paper', font=dict(size=16)),
-        font_family="PingFangSC-Light",
-        margin=dict(
-            l=30, r=30, b=20, t=100),
-        # gap between bars of adjacent location coordinates.
-        bargap=0.3,
-        # gap between bars of the same location coordinate.
-        bargroupgap=0,
-        hovermode="closest")
-    return play_percentageFig
-
-
-# 互动率
-@app.callback(Output('interact_bar', 'figure'), [Input('signal', 'children')])
-def update_playvv_graph(jsonified_submit_value):
-    mode, dimension = json.loads(jsonified_submit_value)
-    subDf = getSubDf(mode, dimension)
-
-    interactDf = subDf.query("variable.str.contains('互动率')")
-    interactFig = px.bar(interactDf,
-                         title='互动率对比',
-                         x=dimension, y='value', color='人群', facet_row='statType', facet_row_spacing=0.05,
-                         labels={"value": "统计值", "statType": "统计方式"},
-                         barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Blugrn)
-
-    interactFig.update_traces(texttemplate='%{value:.3f}',
-                              textposition='outside')
-    interactFig.update_yaxes(
-        range=[0, 0.018], showgrid=True)  # the y-axis
-    interactFig.update_layout(
-        height=700,
-        title=dict(
-            x=0.5, xref='paper', font=dict(size=16)),
-        font_family="PingFangSC-Light",
-        margin=dict(
-            l=30, r=30, b=20, t=100),
-        # gap between bars of adjacent location coordinates.
-        bargap=0.3,
-        # gap between bars of the same location coordinate.
-        bargroupgap=0,
-        hovermode="closest")
-    return interactFig
-
-
 # 时长-vv散点图
 @app.callback(Output('duration_vv_scatter', 'figure'), [Input('signal', 'children')])
 def update_duration_vv_scatter_graph(jsonified_submit_value):
@@ -571,3 +465,226 @@ def display_duration_vv_scatter_click_data(clickData):
                 video_id, href="https://h5.weishi.qq.com/weishi/feed/{}".format(video_id), target='_blank')
         ],
         className="link_item")
+
+
+# 完播率
+@app.callback(Output('complete_ratio_bar', 'figure'), [Input('signal', 'children')])
+def update_complete_ratio_graph(jsonified_submit_value):
+    mode, dimension = json.loads(jsonified_submit_value)
+    subDf = getSubDf(mode, dimension)
+
+    complete_ratioDf = subDf.query("variable.str.contains('完播率')")
+    complete_ratioFig = px.bar(complete_ratioDf,
+                               title='完播率对比',
+                               x=dimension, y='value', color='人群', facet_row='统计方式', facet_row_spacing=0.05,
+                               labels={"value": "统计值"},
+                               barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Bluyl)
+
+    complete_ratioFig.update_traces(texttemplate='%{value:.2f}',
+                                    textposition='outside')
+    complete_ratioFig.update_yaxes(
+        range=[0, 0.3], showgrid=True)  # the y-axis
+    complete_ratioFig.update_layout(
+        height=900,
+        title=dict(
+            x=0.5, xref='paper', font=dict(size=16)),
+        font_family="PingFangSC-Light",
+        margin=dict(
+            l=30, r=30, b=20, t=100),
+        # gap between bars of adjacent location coordinates.
+        bargap=0.3,
+        # gap between bars of the same location coordinate.
+        bargroupgap=0,
+        hovermode="closest")
+    return complete_ratioFig
+
+
+# 播放完成度
+@app.callback(Output('play_percentage_bar', 'figure'), [Input('signal', 'children')])
+def update_play_percentage_graph(jsonified_submit_value):
+    mode, dimension = json.loads(jsonified_submit_value)
+    subDf = getSubDf(mode, dimension)
+
+    play_percentageDf = subDf.query("variable.str.contains('播放完成度')")
+    play_percentageFig = px.bar(play_percentageDf,
+                                title='播放完成度对比',
+                                x=dimension, y='value', color='人群', facet_row='统计方式', facet_row_spacing=0.05,
+                                labels={"value": "统计值"},
+                                barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Bluyl)
+
+    play_percentageFig.update_traces(texttemplate='%{value:.2f}',
+                                     textposition='outside')
+    play_percentageFig.update_yaxes(
+        range=[0, 0.6], showgrid=True)  # the y-axis
+    play_percentageFig.update_layout(
+        height=900,
+        title=dict(
+            x=0.5, xref='paper', font=dict(size=16)),
+        font_family="PingFangSC-Light",
+        margin=dict(
+            l=30, r=30, b=20, t=100),
+        # gap between bars of adjacent location coordinates.
+        bargap=0.3,
+        # gap between bars of the same location coordinate.
+        bargroupgap=0,
+        hovermode="closest")
+    return play_percentageFig
+
+
+# 互动率
+@app.callback(Output('interact_bar', 'figure'), [Input('signal', 'children')])
+def update_playvv_graph(jsonified_submit_value):
+    mode, dimension = json.loads(jsonified_submit_value)
+    subDf = getSubDf(mode, dimension)
+
+    interactDf = subDf.query("variable.str.contains('互动率')")
+    interactFig = px.bar(interactDf,
+                         title='互动率对比',
+                         x=dimension, y='value', color='人群', facet_row='统计方式', facet_row_spacing=0.05,
+                         labels={"value": "统计值"},
+                         barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Blugrn)
+
+    interactFig.update_traces(texttemplate='%{value:.3f}',
+                              textposition='outside')
+    interactFig.update_yaxes(
+        range=[-0.01, 0.01], showgrid=True)  # the y-axis
+    interactFig.update_layout(
+        height=900,
+        title=dict(
+            x=0.5, xref='paper', font=dict(size=16)),
+        font_family="PingFangSC-Light",
+        margin=dict(
+            l=30, r=30, b=20, t=100),
+        # gap between bars of adjacent location coordinates.
+        bargap=0.3,
+        # gap between bars of the same location coordinate.
+        bargroupgap=0,
+        hovermode="closest")
+    return interactFig
+
+
+# 3s快滑率
+@app.callback(Output('skip_3s_bar', 'figure'), [Input('signal', 'children')])
+def update_skip_3s_graph(jsonified_submit_value):
+    mode, dimension = json.loads(jsonified_submit_value)
+    subDf = getSubDf(mode, dimension)
+
+    skip_3sDf = subDf.query("variable.str.contains('3s快滑率')")
+    skip_3sFig = px.bar(skip_3sDf,
+                        title='3s快滑率对比',
+                        x=dimension, y='value', color='人群', facet_row='统计方式', facet_row_spacing=0.05,
+                        labels={"value": "统计值"},
+                        barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Blugrn)
+
+    skip_3sFig.update_traces(texttemplate='%{value:.2f}',
+                             textposition='outside')
+    skip_3sFig.update_yaxes(
+        range=[0, 0.8], showgrid=True)  # the y-axis
+    skip_3sFig.update_layout(
+        height=900,
+        title=dict(
+            x=0.5, xref='paper', font=dict(size=16)),
+        font_family="PingFangSC-Light",
+        margin=dict(
+            l=30, r=30, b=20, t=100),
+        # gap between bars of adjacent location coordinates.
+        bargap=0.3,
+        # gap between bars of the same location coordinate.
+        bargroupgap=0,
+        hovermode="closest")
+    return skip_3sFig
+
+
+# 5s快滑率
+@app.callback(Output('skip_5s_bar', 'figure'), [Input('signal', 'children')])
+def update_skip_5s_graph(jsonified_submit_value):
+    mode, dimension = json.loads(jsonified_submit_value)
+    subDf = getSubDf(mode, dimension)
+
+    skip_5sDf = subDf.query("variable.str.contains('5s快滑率')")
+    skip_5sFig = px.bar(skip_5sDf,
+                        title='5s快滑率对比',
+                        x=dimension, y='value', color='人群', facet_row='统计方式', facet_row_spacing=0.05,
+                        labels={"value": "统计值"},
+                        barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Blugrn)
+
+    skip_5sFig.update_traces(texttemplate='%{value:.2f}',
+                             textposition='outside')
+    skip_5sFig.update_yaxes(
+        range=[0, 0.8], showgrid=True)  # the y-axis
+    skip_5sFig.update_layout(
+        height=900,
+        title=dict(
+            x=0.5, xref='paper', font=dict(size=16)),
+        font_family="PingFangSC-Light",
+        margin=dict(
+            l=30, r=30, b=20, t=100),
+        # gap between bars of adjacent location coordinates.
+        bargap=0.3,
+        # gap between bars of the same location coordinate.
+        bargroupgap=0,
+        hovermode="closest")
+    return skip_5sFig
+
+
+# 单vv时长
+@app.callback(Output('duration_pervv_bar', 'figure'), [Input('signal', 'children')])
+def update_playvv_graph(jsonified_submit_value):
+    mode, dimension = json.loads(jsonified_submit_value)
+    subDf = getSubDf(mode, dimension)
+
+    duration_pervvDf = subDf.query("variable.str.contains('单vv时长')")
+    duration_pervvFig = px.bar(duration_pervvDf,
+                               title='单vv时长对比',
+                               x=dimension, y='value', color='人群', facet_row='统计方式', facet_row_spacing=0.05,
+                               labels={"value": "统计值"},
+                               barmode='group', template='simple_white', color_discrete_sequence=px.colors.sequential.Blugrn)
+
+    duration_pervvFig.update_traces(texttemplate='%{value:.2f}',
+                                    textposition='outside')
+    duration_pervvFig.update_yaxes(range=[0, 10], showgrid=True)  # the y-axis
+    duration_pervvFig.update_layout(
+        height=900,
+        title=dict(
+            x=0.5, xref='paper', font=dict(size=16)),
+        font_family="PingFangSC-Light",
+        margin=dict(
+            l=30, r=30, b=20, t=100),
+        # gap between bars of adjacent location coordinates.
+        bargap=0.3,
+        # gap between bars of the same location coordinate.
+        bargroupgap=0,
+        hovermode="closest")
+    return duration_pervvFig
+
+
+# 完播率/播放完成度/3s快滑率/5s快滑率
+# @app.callback(Output('consumestat_bar', 'figure'), [Input('signal', 'children')])
+# def update_playvv_graph(jsonified_submit_value):
+#     mode, dimension = json.loads(jsonified_submit_value)
+#     subDf = getSubDf(mode, dimension)
+
+#     consumeStatDf = subDf.query(
+#         "~(variable.str.contains('播放VV') or variable.str.contains('单vv时长') or variable.str.contains('互动率') or variable.str.contains('视频数量'))")
+#     consumeStatFig = px.bar(consumeStatDf,
+#                             title='完播率/播放完成度/快滑指标对比',
+#                             x=dimension, y='value', color='人群', facet_row='统计方式', facet_col='指标', facet_row_spacing=0.05, facet_col_spacing=0.03,
+#                             labels={"value": "统计值"},
+#                             barmode='group', template='simple_white', color_discrete_sequence=px.colors.qualitative.Pastel1)
+
+#     consumeStatFig.update_traces(texttemplate='%{value:%.2f}',
+#                                  textposition='outside')
+#     consumeStatFig.update_yaxes(showgrid=True)  # the y-axis
+#     consumeStatFig.update_layout(
+#         height=900,
+#         title=dict(
+#             x=0.5, xref='paper', font=dict(size=16)),
+#         font_family="PingFangSC-Light",
+#         margin=dict(
+#             l=30, r=30, b=20, t=100),
+#         # gap between bars of adjacent location coordinates.
+#         bargap=0.3,
+#         # gap between bars of the same location coordinate.
+#         bargroupgap=0,
+#         hovermode="closest")
+#     return consumeStatFig

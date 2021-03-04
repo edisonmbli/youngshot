@@ -295,3 +295,20 @@ body {
   display: flex;
   justify-content: space-around;
 }
+
+.sidebar_container {
+  margin-top: 0%;
+  padding-top: 0%;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  align-content: space-between;
+}
+
+.sidebar_control_block {
+  margin-bottom: 30%;
+}
+
+.sidebar_item {
+  margin-bottom: 15%;
+}
